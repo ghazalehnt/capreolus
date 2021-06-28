@@ -56,8 +56,9 @@ class RerankTask(Task):
         logger.debug("results path: %s", train_output_path)
 
         docids = set(docid for querydocs in best_search_run.values() for docid in querydocs)
+        qdocs = {k: v.keys() for k, v in best_search_run.items()}  # todo: to calc avgdoclen
         self.reranker.extractor.preprocess(
-            qids=best_search_run.keys(), docids=docids, topics=self.benchmark.topics[self.benchmark.query_type]
+            qids=best_search_run.keys(), docids=docids, topics=self.benchmark.topics[self.benchmark.query_type], qdocs=qdocs
         )
         self.reranker.build_model()
         self.reranker.searcher_scores = best_search_run
@@ -136,8 +137,9 @@ class RerankTask(Task):
         best_search_run = Searcher.load_trec_run(best_search_run_path)
 
         docids = set(docid for querydocs in best_search_run.values() for docid in querydocs)
+        qdocs = {k: v.keys() for k, v in best_search_run.items()}  # todo: to calc avgdoclen
         self.reranker.extractor.preprocess(
-            qids=best_search_run.keys(), docids=docids, topics=self.benchmark.topics[self.benchmark.query_type]
+            qids=best_search_run.keys(), docids=docids, topics=self.benchmark.topics[self.benchmark.query_type], qdocs=qdocs
         )
         train_output_path = self.get_results_path()
         self.reranker.build_model()

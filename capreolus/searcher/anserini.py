@@ -1,6 +1,7 @@
 import math
 import os
 import subprocess
+import time
 
 import numpy as np
 
@@ -547,3 +548,40 @@ class SDM(AnseriniSearcherMixIn, Searcher):
         self._anserini_query_from_file(topicsfn, anserini_param_str, output_path)
 
         return output_path
+
+
+class QRels(Searcher):
+    """ Searcher that returns all judged documents for a given query """
+
+    name = "qrels"
+    dependencies = [Dependency(key="benchmark", module="benchmark", name=None)]
+
+    @staticmethod
+    def config():
+        pass
+
+    def query_from_file(self, topicsfn, output_path):
+        assert topicsfn == self.benchmark.topic_file
+
+        run = {}
+        for qid in self.benchmark.topics[self.benchmark.query_type]:
+            if qid not in self.benchmark.qrels:
+                continue
+
+            run[qid] = {}
+            for idx, docid in enumerate(sorted(self.benchmark.qrels[qid])):
+                rank = idx + 1
+                run[qid][docid] = 1.0 / rank
+
+        os.makedirs(output_path, exist_ok=True)
+        outfn = os.path.join(output_path, "searcher")
+
+        if not os.path.exists(outfn):
+            self.write_trec_run(run, outfn)
+        else:
+            time.sleep(1)
+        return output_path
+
+    def query(self, *args, **kwargs):
+        raise NotImplementedError("this searcher only supports queries in the qrels (via query_from_file)")
+
