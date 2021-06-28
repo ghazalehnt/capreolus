@@ -58,12 +58,12 @@ class DocStats(Extractor):
         logger.debug("loading documents")
         self.doc_tf = {}
         self.doc_len = {}
-        if self.benchmark.name == "SOMETHING": # TODO
+        if self.benchmark.collection.module_name == "kitt":
             for docid in docids:
                 doc = self.tokenizer.tokenize(self.index.get_doc(docid)) # TODO change
                 self.doc_tf[docid] = Counter(doc)
                 self.doc_len[docid] = len(doc)
-        elif self.benchmark.name == "somethingelse":
+        elif self.benchmark.collection.module_name == "kitt_inferred":
             recbole_path = "/GW/PSR/work/ghazaleh/RecBole/"
             rec_model = ItemLM(f"{recbole_path}saved/JOINTSRMFSPARSE-Jun-25-2021_11-40-14.pth", [f"{recbole_path}config_RO_RS_JSR.yml"],
                            "JOINTSRMFSPARSE", "KITT_goodreads_rated", k=100, step=200000)
