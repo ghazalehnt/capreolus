@@ -281,7 +281,8 @@ class QRels(Searcher):
                 continue
 
             run[qid] = {}
-            for idx, docid in enumerate(sorted(benchmark.qrels[qid])):
+            sorted_qrels = [k for k, v in sorted(benchmark.qrels[qid].items(), key=lambda x: x[1], reverse=True)]
+            for idx, docid in enumerate(sorted_qrels):
                 rank = idx + 1
                 run[qid][docid] = 1.0 / rank
 
