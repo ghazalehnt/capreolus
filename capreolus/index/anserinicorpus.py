@@ -5,8 +5,10 @@ from . import Index
 logger = get_logger(__name__)  # pylint: disable=invalid-name
 MAX_THREADS = constants["MAX_THREADS"]
 
+
+@Index.register
 class AnseriniCorpusIndex(Index):
-    name = "anserinicorpus"
+    module_name = "anserinicorpus"
     indexcorpus = '/GW/NeuralIR/nobackup/anserini0.9-index.clueweb09.englishonly.nostem.stopwording' #TODO hard codeed
 
     def open(self):

@@ -550,10 +550,11 @@ class SDM(AnseriniSearcherMixIn, Searcher):
         return output_path
 
 
+@Searcher.register
 class QRels(Searcher):
     """ Searcher that returns all judged documents for a given query """
 
-    name = "qrels"
+    module_name = "qrels"
     dependencies = [Dependency(key="benchmark", module="benchmark", name=None)]
 
     @staticmethod
@@ -561,15 +562,14 @@ class QRels(Searcher):
         pass
 
     def query_from_file(self, topicsfn, output_path):
-        assert topicsfn == self.benchmark.topic_file
-
         run = {}
         for qid in self.benchmark.topics[self.benchmark.query_type]:
             if qid not in self.benchmark.qrels:
                 continue
 
             run[qid] = {}
-            for idx, docid in enumerate(sorted(self.benchmark.qrels[qid])):
+            sorted_qrels = [k for k, v in sorted(self.benchmark.qrels[qid].items(), key=lambda x: x[1], reverse=True)]
+            for idx, docid in enumerate(sorted_qrels):
                 rank = idx + 1
                 run[qid][docid] = 1.0 / rank
 

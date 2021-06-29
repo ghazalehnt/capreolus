@@ -8,6 +8,8 @@ from ..utils.trec import load_trec_topics
 
 PACKAGE_PATH = constants["PACKAGE_PATH"]
 
+
+@Benchmark.register
 class KITT(Benchmark):
     """KITT(YGWYC) dataset benchmark"""
 
@@ -18,20 +20,10 @@ class KITT(Benchmark):
                    ConfigOption("assessed_set", "all")]
     DATA_DIR = Path(open(join(PACKAGE_PATH, "..", "paths_env_vars", "YGWYC_experiments_data_path"), 'r').read().strip())
 
-    @property
-    def qrel_file(self):
-        fn = "{}_judgements_{}".format(self.config["domain"], self.config["assessed_set"])
-        return self.DATA_DIR / "judgements" / fn
-
-    @property
-    def fold_file(self):
-        fn = "{}_folds.json".format(self.config["domain"])
-        return self.DATA_DIR / "splits" / fn
-
-    @property
-    def topic_file(self):
-        fn = f"{self.domain}_topics.{self.query_type}.txt"
-        return self.DATA_DIR / "topics" / fn
+    def build(self):
+        self.qrel_file = self.DATA_DIR / "judgements" / "{}_judgements_{}".format(self.config["domain"], self.config["assessed_set"])
+        self.topic_file = self.DATA_DIR / "topics" / f"{self.domain}_topics.{self.query_type}.txt"
+        self.fold_file = self.DATA_DIR / "splits" / "{}_folds.json".format(self.config["domain"])
 
     @property
     def topics(self):
@@ -43,8 +35,8 @@ class KITT(Benchmark):
 
     @property
     def query_type(self):
-        return self.cfg["querytype"]
+        return self.config["query_type"]
 
     @property
     def domain(self):
-        return self.cfg["domain"]
+        return self.config["domain"]

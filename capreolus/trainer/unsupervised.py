@@ -2,11 +2,13 @@ import os
 
 import torch
 
-from capreolus import Trainer, Searcher
+from . import Trainer
+from capreolus.searcher import Searcher
 
 
+@Trainer.register
 class UnsupervisedTrainer(Trainer):
-    name = "unsupervised"
+    module_name = "unsupervised"
     dependencies = []
 
     @staticmethod

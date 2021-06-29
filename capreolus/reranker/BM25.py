@@ -9,12 +9,13 @@ from capreolus.utils.loginit import get_logger
 logger = get_logger(__name__)  # pylint: disable=invalid-name
 
 
+@Reranker.register
 class BM25Reranker(Reranker):
     """ BM25 implemented in Python as a reranker. Tested only with PES20 benchmark.
         This mainly serves as a demonstration of how non-neural methods can be prototyped as rerankers.
     """
 
-    name = "BM25"
+    module_name = "BM25"
     dependencies = [
         Dependency(key="extractor", module="extractor", name="docstats"),
         Dependency(key="trainer", module="trainer", name="unsupervised"),
@@ -88,15 +89,15 @@ class BM25Reranker(Reranker):
 
     def score_document_term(self, term, docid, avg_doc_len, query_tf):
         tf = self.extractor.doc_tf[docid].get(term, 0)
-        numerator = tf * (self.cfg["k1"] + 1)
-        denominator = tf + self.cfg["k1"] * (
-                    1 - self.cfg["b"] + self.cfg["b"] * (self.extractor.doc_len[docid] / avg_doc_len))
+        numerator = tf * (self.config["k1"] + 1)
+        denominator = tf + self.config["k1"] * (
+                    1 - self.config["b"] + self.config["b"] * (self.extractor.doc_len[docid] / avg_doc_len))
         doctf = numerator / denominator
 
-        if self.cfg["c"] is None:
+        if self.config["c"] is None:
             qtf = query_tf
         else:
-            qtf = (query_tf * (self.cfg["c"] + 1)) / (query_tf + self.cfg["c"])
+            qtf = (query_tf * (self.config["c"] + 1)) / (query_tf + self.config["c"])
 
         idf = self.extractor.background_idf(term)
 
