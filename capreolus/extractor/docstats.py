@@ -68,7 +68,7 @@ class DocStats(Extractor):
             with open("/GW/PSR/work/data_personalization/KITT_2/YGWYC_dataset_final/assessments/url_id_mapping.csv", 'r') as f:
                 for l in f.readlines():
                     sp = l.split(",")
-                    if sp[0] == self.bookmark.domain:
+                    if sp[0] == self.benchmark.domain:
                         KITT_urls[f"{sp[0]}_{sp[1]}"] = sp[2].strip()
             recbole_path = "/GW/PSR/work/ghazaleh/RecBole/"
             rec_model = ItemLM(f"{recbole_path}saved/JOINTSRMFSPARSE-Jun-25-2021_11-40-14.pth", [f"{recbole_path}config_RO_RS_JSR.yml"],
