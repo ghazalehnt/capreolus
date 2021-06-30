@@ -24,7 +24,7 @@ class DocStats(Extractor):
             key="index", module="index", name="anserini", default_config_overrides={"indexstops": True, "stemmer": "none"}
         ),
         Dependency(
-            key="backgroundindex", module="index", name="anserinicorpus", default_config_overrides={"indexcorpus": "anserini0.9-index.clueweb09.englishonly.nostem.stopwording"}
+            key="backgroundindex", module="index", name="anserinicorpus"
         ),
         Dependency(key="tokenizer", module="tokenizer", name="anserini", default_config_overrides={"keepstops": False}),
     ]
