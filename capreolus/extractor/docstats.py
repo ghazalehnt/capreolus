@@ -50,7 +50,7 @@ class DocStats(Extractor):
             qtext = qtext.replace("[", "")
             qtext = qtext.replace("]", "")
             qtext = qtext.strip()
-            query = self["tokenizer"].tokenize(qtext)
+            query = self.tokenizer.tokenize(qtext)
             q_count = Counter(query)
             self.qid_term_frequencies[qid] = {k: v for k, v in q_count.items()}
             self.qid_termprob[qid] = {k: (v / len(query)) for k, v in q_count.items()}
