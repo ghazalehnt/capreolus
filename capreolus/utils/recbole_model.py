@@ -35,6 +35,8 @@ class ItemLM:
         print("making item lm...")
         s = 1
         e = step
+        if e > len(item_ids) > s:
+            e = len(item_ids)
         while e <= len(item_ids):
             print(f"{s}:{e}")
             batch_ids = item_ids[s:e]
