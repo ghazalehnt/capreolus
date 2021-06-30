@@ -14,9 +14,6 @@ class AnseriniCorpusIndex(Index):
     def open(self):
         from jnius import autoclass
 
-        JIndexUtils = autoclass("io.anserini.index.IndexUtils")
-        self.index_utils = JIndexUtils(self.indexcorpus)
-
         JFile = autoclass("java.io.File")
         JFSDirectory = autoclass("org.apache.lucene.store.FSDirectory")
         fsdir = JFSDirectory.open(JFile(self.indexcorpus).toPath())
