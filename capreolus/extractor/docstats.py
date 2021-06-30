@@ -64,16 +64,17 @@ class DocStats(Extractor):
                 self.doc_tf[docid] = Counter(doc)
                 self.doc_len[docid] = len(doc)
         elif self.benchmark.collection.module_name == "kitt_inferred":
-            book_KITT_urls = {}
-            with open("/GW/PSR/work/data_personalization/documents/book/book_url_ids.txt", 'r') as f:
+            KITT_urls = {}
+            with open("/GW/PSR/work/data_personalization/KITT_2/YGWYC_dataset_final/assessments/url_id_mapping.csv", 'r') as f:
                 for l in f.readlines():
                     sp = l.split(",")
-                    book_KITT_urls["book_" + sp[0].strip()] = sp[1].strip()
+                    if sp[0] == self.bookmark.domain:
+                        KITT_urls[f"{sp[0]}_{sp[1]}"] = sp[2].strip()
             recbole_path = "/GW/PSR/work/ghazaleh/RecBole/"
             rec_model = ItemLM(f"{recbole_path}saved/JOINTSRMFSPARSE-Jun-25-2021_11-40-14.pth", [f"{recbole_path}config_RO_RS_JSR.yml"],
-                           "JOINTSRMFSPARSE", "KITT_goodreads_rated", k=100, step=200000, load_docs=book_KITT_urls.values())
+                           "JOINTSRMFSPARSE", "KITT_goodreads_rated", k=100, step=200000, load_docs=KITT_urls.values())
             for docid in docids:
-                b_url = book_KITT_urls[docid]
+                b_url = KITT_urls[docid]
                 lm, title, url, recbole_id = rec_model.get_terms_url(b_url)
                 if lm is None:
                     print(b_url)
