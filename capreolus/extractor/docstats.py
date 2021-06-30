@@ -64,21 +64,21 @@ class DocStats(Extractor):
                 self.doc_tf[docid] = Counter(doc)
                 self.doc_len[docid] = len(doc)
         elif self.benchmark.collection.module_name == "kitt_inferred":
-            recbole_path = "/GW/PSR/work/ghazaleh/RecBole/"
-            rec_model = ItemLM(f"{recbole_path}saved/JOINTSRMFSPARSE-Jun-25-2021_11-40-14.pth", [f"{recbole_path}config_RO_RS_JSR.yml"],
-                           "JOINTSRMFSPARSE", "KITT_goodreads_rated", k=100, step=200000)
             book_KITT_urls = {}
             with open("/GW/PSR/work/data_personalization/documents/book/book_url_ids.txt", 'r') as f:
                 for l in f.readlines():
                     sp = l.split(",")
                     book_KITT_urls["book_" + sp[0].strip()] = sp[1].strip()
+            recbole_path = "/GW/PSR/work/ghazaleh/RecBole/"
+            rec_model = ItemLM(f"{recbole_path}saved/JOINTSRMFSPARSE-Jun-25-2021_11-40-14.pth", [f"{recbole_path}config_RO_RS_JSR.yml"],
+                           "JOINTSRMFSPARSE", "KITT_goodreads_rated", k=100, step=200000, load_docs=book_KITT_urls.values())
             for docid in docids:
                 b_url = book_KITT_urls[docid]
                 lm, title, url, recbole_id = rec_model.get_terms_url(b_url)
                 if lm is None:
                     print(b_url)
                     continue
-                min_p = min(lm)
+                min_p = min(lm, key=lambda x: x[1])[1]
                 estimated_length = 1/min_p
                 self.doc_tf[docid] = {i[0]: round(i[1] * estimated_length) for i in lm}
                 self.doc_len[docid] = sum(self.doc_tf[docid].values())
