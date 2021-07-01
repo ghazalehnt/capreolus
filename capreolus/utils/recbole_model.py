@@ -28,15 +28,18 @@ class ItemLM:
             self.url_id[self.item_identifiers[i]] = i
         self.item_names = self.dataset.get_item_feature()['item_title']
 
+        url_id_temp = {}
         if load_docs is not None:
             item_ids = set()
             for url in load_docs:
                 if url in self.url_id:
                     item_ids.add(self.url_id[url])
+                    url_id_temp[url] = self.url_id[url]
                 else:
                     print(f"{url} does not exist in model")
             item_ids = list(item_ids)
-
+        self.url_id = url_id_temp
+        
         self.items_top_terms = {}
         print("making item lm...")
         s = 1
