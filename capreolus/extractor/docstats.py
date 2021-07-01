@@ -100,3 +100,16 @@ class DocStats(Extractor):
         df = self.backgroundindex.get_df(term)
         total_docs = self.backgroundindex.numdocs
         return np.log10((total_docs - df + 0.5) / (df + 0.5))
+
+    def id2vec(self, qid, posid, negid=None, query=None):
+        # if query is not None:
+        #     # if qid is None:
+        #     #     query = self["tokenizer"].tokenize(query)
+        #     # else:
+        #     #     raise RuntimeError("received both a qid and query, but only one can be passed")
+        #     raise RuntimeError("this is not implemented completely to get the query")
+        # else:
+        #     query = self.qid_termprob[qid]
+        if qid is None:
+            raise RuntimeError("this is not implemented completely to get the query")
+        return {"qid": qid, "posdocid": posid}  #these are what used in BM25 and LM rankers, TODO (think about) sampler use this, we could give other things here, but we are just getting them from extractor
