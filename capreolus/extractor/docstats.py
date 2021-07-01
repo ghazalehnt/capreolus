@@ -77,7 +77,9 @@ class DocStats(Extractor):
                 b_url = KITT_urls[docid]
                 lm, title, url, recbole_id = rec_model.get_terms_url(b_url)
                 if lm is None:
-                    print(b_url)
+                    # TODO handle these: maybe make the LM based on the normal LM case...
+                    self.doc_tf[docid] = {}
+                    self.doc_len[docid] = 0
                     continue
                 min_p = min(lm, key=lambda x: x[1])[1]
                 estimated_length = 1/min_p
