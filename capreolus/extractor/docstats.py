@@ -101,7 +101,7 @@ class DocStats(Extractor):
         total_docs = self.backgroundindex.numdocs
         return np.log10((total_docs - df + 0.5) / (df + 0.5))
 
-    def id2vec(self, qid, posid, negid=None, query=None):
+    def id2vec(self, qid, posid, negid=None, **kwargs):
         # if query is not None:
         #     # if qid is None:
         #     #     query = self["tokenizer"].tokenize(query)
