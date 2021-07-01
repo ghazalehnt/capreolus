@@ -584,15 +584,3 @@ class QRels(Searcher):
 
     def query(self, *args, **kwargs):
         raise NotImplementedError("this searcher only supports queries in the qrels (via query_from_file)")
-
-    @staticmethod
-    def write_trec_run(preds, outfn):
-        count = 0
-        with open(outfn, "wt") as outf:
-            qids = sorted(preds.keys())
-            for qid in qids:
-                rank = 1
-                for docid, score in sorted(preds[qid].items(), key=lambda x: x[1], reverse=True):
-                    print(f"{qid} Q0 {docid} {rank} {score} capreolus", file=outf)
-                    rank += 1
-                    count += 1

@@ -43,7 +43,7 @@ class Searcher(ModuleBase):
     def write_trec_run(preds, outfn):
         count = 0
         with open(outfn, "wt") as outf:
-            qids = sorted(preds.keys(), key=lambda k: int(k))
+            qids = sorted(preds.keys())
             for qid in qids:
                 rank = 1
                 for docid, score in sorted(preds[qid].items(), key=lambda x: x[1], reverse=True):
