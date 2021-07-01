@@ -71,7 +71,7 @@ class DocStats(Extractor):
                     if sp[0] == self.benchmark.domain:
                         KITT_urls[f"{sp[0]}_{sp[1]}"] = sp[2].strip()
             recbole_path = "/GW/PSR/work/ghazaleh/RecBole/"
-            rec_model = ItemLM(f"{recbole_path}saved/JOINTSRMFSPARSE-Jun-25-2021_11-40-14.pth", [f"{recbole_path}config_RO_RS_JSR.yml"],
+            rec_model = ItemLM(f"{recbole_path}saved/JOINTSRMFSPARSE-Jul-01-2021_11-51-10.pth", [f"{recbole_path}config_RO_RS_JSR.yml"],
                            "JOINTSRMFSPARSE", "KITT_goodreads_rated", k=100, step=200000, load_docs=KITT_urls.values())
             for docid in docids:
                 b_url = KITT_urls[docid]
