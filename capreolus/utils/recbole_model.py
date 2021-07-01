@@ -29,7 +29,13 @@ class ItemLM:
         self.item_names = self.dataset.get_item_feature()['item_title']
 
         if load_docs is not None:
-            item_ids = list(set(self.url_id[url] for url in load_docs))
+            item_ids = set()
+            for url in load_docs:
+                if url in self.url_id:
+                    item_ids.add(self.url_id[url])
+                else:
+                    print(f"{url} does not exist in model")
+            item_ids = list(item_ids)
 
         self.items_top_terms = {}
         print("making item lm...")
@@ -58,7 +64,7 @@ class ItemLM:
 
     def get_terms_url(self, item_url):
         if item_url not in self.url_id:
-            print(f"We don't have this url in our model {item_url}, because it did not have any reviews it was not crawled. TODO do that... what if it doesn't have description as well?")
+            print(f"No inferred LM for {item_url}, since there are no interactions for the item in our dataset.")
             return None, None, None, None
         item_id = self.url_id[item_url]
         top_terms = self.items_top_terms[item_id]
