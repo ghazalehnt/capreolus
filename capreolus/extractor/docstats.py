@@ -85,7 +85,7 @@ class DocStats(Extractor):
                 raise NotImplementedError(f"{self.config['CF_model']} CF_model not implemented!")
             # TODO clean , add to config, files
             rec_model = ItemLM(cf_model_file, cf_config_files, "JOINTSRMFSPARSE", "KITT_goodreads_rated",
-                               k=self.config["CF_item_lm_top_k"], step=200000, load_docs=KITT_urls.values())
+                               k=int(self.config["CF_item_lm_top_k"]), step=200000, load_docs=KITT_urls.values())
             for docid in docids:
                 b_url = KITT_urls[docid]
                 lm, title, url, recbole_id = rec_model.get_terms_url(b_url)
