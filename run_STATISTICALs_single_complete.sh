@@ -53,10 +53,10 @@ fi
 echo "$domain - $pipeline - $querytype - $collection - $method - $cf_model - $cf_topk - $FOLDNUM"
 
 if [ "$pipeline" == "ENTITY_CONCEPT_JOINT_LINKING" ]; then
-  if ["$collection" == "kitt_inferred"];then
+  if [ "$collection" == "kitt_inferred" ];then
     time ./scripts/capreolus rerank.traineval with benchmark.name=$benchmark benchmark.query_type=$querytype benchmark.assessed_set=$assessed_set benchmark.collection.name=$collection reranker.name=$ranker reranker.extractor.CF_item_lm_top_k=$cf_topk reranker.extractor.CF_model=$cf_model rank.searcher.name=qrels seed=123456 fold=s$FOLDNUM;
   fi
-  if ["$collection" == "kitt"];then
+  if [ "$collection" == "kitt" ];then
     time ./scripts/capreolus rerank.traineval with benchmark.name=$benchmark benchmark.query_type=$querytype benchmark.assessed_set=$assessed_set benchmark.collection.name=$collection reranker.name=$ranker rank.searcher.name=qrels seed=123456 fold=s$FOLDNUM;
   fi
 fi

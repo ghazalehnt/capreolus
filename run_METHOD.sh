@@ -16,12 +16,12 @@ fi
 start=$3 # 1
 end=$4 # 90
 cf_model=$5
-if [ "$cf_model" == "" && "$collection" == "kitt_inferred"];then
+if [ "$cf_model" == "" ] && [ "$collection" == "kitt_inferred" ];then
   echo "give input cf_model: description_genre_a100_ns8 description_genre_1-review_a100_ns8 description_genre_all-reviews_a100_ns8"
   exit
 fi
 cf_topk=$6
-if [ "$cf_topk" == "" && "$collection" == "kitt_inferred"];then
+if [ "$cf_topk" == "" ] && [ "$collection" == "kitt_inferred" ];then
   echo "give input cf_topk an int"
   exit
 fi
