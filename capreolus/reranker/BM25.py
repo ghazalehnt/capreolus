@@ -1,6 +1,6 @@
 import json
 import os
-from os.path import join
+from os.path import join, exists
 
 from capreolus import ConfigOption, Dependency
 from capreolus.reranker import Reranker
@@ -28,6 +28,8 @@ class BM25Reranker(Reranker):
     ]
 
     def build_model(self):
+        if not exists(self.get_cache_path()):
+            os.makedirs(self.get_cache_path(), exist_ok=True)
         return self
 
     def get_docscore_cache_path(self):
