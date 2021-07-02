@@ -28,8 +28,8 @@ class BM25Reranker(Reranker):
     ]
 
     def build_model(self):
-        if not exists(self.get_cache_path()):
-            os.makedirs(self.get_cache_path(), exist_ok=True)
+        if not exists(self.get_docscore_cache_path()):
+            os.makedirs(self.get_docscore_cache_path(), exist_ok=True)
         return self
 
     def get_docscore_cache_path(self):
