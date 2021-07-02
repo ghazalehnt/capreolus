@@ -59,6 +59,7 @@ class DocStats(Extractor):
         self.doc_tf = {}
         self.doc_len = {}
         if self.benchmark.collection.module_name == "kitt":
+            self.index.create_index()
             for docid in docids:
                 doc = self.tokenizer.tokenize(self.index.get_doc(docid)) # TODO change
                 self.doc_tf[docid] = Counter(doc)
