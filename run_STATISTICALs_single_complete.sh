@@ -17,8 +17,11 @@ domain=$1
 pipeline=$2
 method=$3
 collection=$4
+assessed_set=$5
+cf_model=$6
+cf_topk=$7
 benchmark=kitt
-filterq=DONT
+
 
 if [ "$method" == "LMD" ];then
   ranker="LMDirichlet"
@@ -33,71 +36,24 @@ if [ "$method" == "BM25cInf" ];then
   ranker="BM25 reranker.b=0.75 reranker.k1=1.5"
 fi
 
-# dividant is 10 (folds) * number if queryfilters/cuts
-dividant=$((10*5))
+# dividant is 10 (folds) * number of queryfilters/cuts which is 1 in this case
+dividant=$((10*1))
 qtidx=$(( (SLURM_ARRAY_TASK_ID-1)/dividant ))
 querytype=${profiles[$qtidx]}
 pvidx=$(( SLURM_ARRAY_TASK_ID - (qtidx * dividant)  ))
 FOLDNUM=$(( ((pvidx-1)%10)+1 ))
 
-# 17 is number of profiles
-if ((SLURM_ARRAY_TASK_ID < 1 || SLURM_ARRAY_TASK_ID > (dividant*17))); then
+# 9 is number of profiles
+if ((SLURM_ARRAY_TASK_ID < 1 || SLURM_ARRAY_TASK_ID > (dividant*9))); then
   conda deactivate
   echo "SLURM_ARRAY_TASK_ID is wrong: ${SLURM_ARRAY_TASK_ID}"
   exit
 fi
 
+echo "$domain - $pipeline - $querytype - $collection - $method - $cf_model - $cf_topk - $FOLDNUM"
 
-if ((pvidx >= 1 && pvidx <= 10)); then
-  filterq=None
-fi
-if ((pvidx >= 11 && pvidx <= 20)); then
-  if [ "$querytype" != "query" ] && [ "$querytype" != "basicprofile" ] && [ "$querytype" != "chatprofile" ]; then
-    filterq=topic-amazon_tf_k-1
+  if [ "$pipeline" == "ENTITY_CONCEPT_JOINT_LINKING" ]; then
+    time ./scripts/capreolus rerank.traineval with benchmark.name=$benchmark benchmark.query_type=$querytype benchmark.assessed_set=$assessed_set benchmark.collection.name=$collection reranker.name=$ranker reranker.extractor.CF_item_lm_top_k=$cf_topk reranker.extractor.CF_model=$cf_model rank.searcher.name=qrels seed=123456 fold=s$FOLDNUM;
   fi
-fi
-if ((pvidx >= 21 && pvidx <= 30)); then
-  if [ "$querytype" != "query" ]; then
-    filterq=user-allusers_tf_k-1
-  fi
-fi
-if ((pvidx >= 31 && pvidx <= 40)); then
-  if [ "$querytype" != "query" ]; then
-    filterq=user-amazon_tf_k-1
-  fi
-fi
-if ((pvidx >= 41 && pvidx <= 50)); then
-  if [ "$querytype" != "query" ] && [ "$querytype" != "basicprofile" ] && [ "$querytype" != "chatprofile" ]; then
-    filterq=topic-alltopics_tf_k-1
-  fi
-fi
-
-echo "$domain - $pipeline - $querytype - $entitystrategy - $domainvocsp - $filterq - $FOLDNUM"
-
-if [ "$filterq" != "DONT" ]; then
-  if [ "$entitystrategy" == "noneE" ]; then
-    if [ "$pipeline" == "ENTITY_CONCEPT_JOINT_LINKING" ]; then
-      time python -m capreolus.run rerank.evaluate with searcher=qrels reranker=$ranker collection=$dataset collection.domain=$domain benchmark=$dataset benchmark.domain=$domain benchmark.querytype=$querytype reranker.extractor.domain_vocab_specific=$domainvocsp reranker.extractor.query_vocab_specific=$filterq fold=s$FOLDNUM ;
-    fi
-  fi
-  if [ "$entitystrategy" == "allE" ]; then
-    time python -m capreolus.run rerank.evaluate with searcher=qrels reranker=$ranker collection=$dataset collection.domain=$domain benchmark=$dataset benchmark.domain=$domain benchmark.querytype=$querytype reranker.extractor.entity_strategy=all reranker.extractor.entitylinking.pipeline=$pipeline reranker.extractor.domain_vocab_specific=$domainvocsp reranker.extractor.query_vocab_specific=$filterq fold=s$FOLDNUM ;
-  fi
-  if [ "$entitystrategy" == "domainE" ]; then
-    time python -m capreolus.run rerank.evaluate with searcher=qrels reranker=$ranker collection=$dataset collection.domain=$domain benchmark=$dataset benchmark.domain=$domain benchmark.querytype=$querytype reranker.extractor.entity_strategy=domain reranker.extractor.entitylinking.pipeline=$pipeline reranker.extractor.domainrelatedness.strategy_NE="${domain}_prCacc"  reranker.extractor.domainrelatedness.strategy_C="${domain}_prCacc"  reranker.extractor.domainrelatedness.domain_relatedness_threshold_NE="${domain}_prCacc" reranker.extractor.domainrelatedness.domain_relatedness_threshold_C="${domain}_prCacc" reranker.extractor.domain_vocab_specific=$domainvocsp reranker.extractor.query_vocab_specific=$filterq fold=s$FOLDNUM ;
-  fi
-  if [ "$entitystrategy" == "specE" ]; then
-    time python -m capreolus.run rerank.evaluate with searcher=qrels reranker=$ranker collection=$dataset collection.domain=$domain benchmark=$dataset benchmark.domain=$domain benchmark.querytype=$querytype reranker.extractor.entity_strategy=specific_domainrel reranker.extractor.entitylinking.pipeline=$pipeline reranker.extractor.domainrelatedness.strategy_NE="${domain}_prCacc"  reranker.extractor.domainrelatedness.strategy_C="${domain}_prCacc"  reranker.extractor.domainrelatedness.domain_relatedness_threshold_NE="${domain}_prCacc" reranker.extractor.domainrelatedness.domain_relatedness_threshold_C="${domain}_prCacc" reranker.extractor.domainrelatedness.return_top=10 reranker.extractor.entityspecificity.return_top=5 reranker.extractor.domain_vocab_specific=$domainvocsp reranker.extractor.query_vocab_specific=$filterq fold=s$FOLDNUM ;
-  fi
-  if [ "$entitystrategy" == "onlyNE" ]; then
-   time python -m capreolus.run rerank.evaluate with searcher=qrels reranker=$ranker collection=$dataset collection.domain=$domain benchmark=$dataset benchmark.domain=$domain benchmark.querytype=$querytype reranker.extractor.entity_strategy=all reranker.extractor.entitylinking.pipeline=$pipeline reranker.extractor.onlyNamedEntities=True reranker.extractor.domain_vocab_specific=$domainvocsp reranker.extractor.query_vocab_specific=$filterq fold=s$FOLDNUM ;
-  fi
-  if [ "$entitystrategy" == "domainOnlyNE" ]; then
-    time python -m capreolus.run rerank.evaluate with searcher=qrels reranker=$ranker collection=$dataset collection.domain=$domain benchmark=$dataset benchmark.domain=$domain benchmark.querytype=$querytype reranker.extractor.entity_strategy=domain reranker.extractor.entitylinking.pipeline=$pipeline reranker.extractor.domainrelatedness.strategy_NE="${domain}_prCacc"  reranker.extractor.domainrelatedness.strategy_C="${domain}_prCacc"  reranker.extractor.domainrelatedness.domain_relatedness_threshold_NE="${domain}_prCacc" reranker.extractor.domainrelatedness.domain_relatedness_threshold_C="${domain}_prCacc" reranker.extractor.onlyNamedEntities=True reranker.extractor.domain_vocab_specific=$domainvocsp reranker.extractor.query_vocab_specific=$filterq fold=s$FOLDNUM ;
-  fi
-  if [ "$entitystrategy" == "specOnlyNE" ]; then
-    time python -m capreolus.run rerank.evaluate with searcher=qrels reranker=$ranker collection=$dataset collection.domain=$domain benchmark=$dataset benchmark.domain=$domain benchmark.querytype=$querytype reranker.extractor.entity_strategy=specific_domainrel reranker.extractor.entitylinking.pipeline=$pipeline reranker.extractor.domainrelatedness.strategy_NE="${domain}_prCacc"  reranker.extractor.domainrelatedness.strategy_C="${domain}_prCacc"  reranker.extractor.domainrelatedness.domain_relatedness_threshold_NE="${domain}_prCacc" reranker.extractor.domainrelatedness.domain_relatedness_threshold_C="${domain}_prCacc" reranker.extractor.domainrelatedness.return_top=10 reranker.extractor.entityspecificity.return_top=5 reranker.extractor.onlyNamedEntities=True reranker.extractor.domain_vocab_specific=$domainvocsp reranker.extractor.query_vocab_specific=$filterq fold=s$FOLDNUM ;
-  fi
-fi
 
 conda deactivate
