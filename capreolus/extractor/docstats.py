@@ -29,6 +29,8 @@ class DocStats(Extractor):
         Dependency(key="tokenizer", module="tokenizer", name="anserini", default_config_overrides={"keepstops": False}),
     ]
     config_spec = [
+        ConfigOption("CF_item_lm_top_k", None, "number of terms of the item LM in inferred case"),
+        ConfigOption("CF_model", None, "the model file name of the CF model options: description_genre_a100_ns8 description_genre_1-review_a100_ns8 description_genre_all-reviews_a100_ns8")
     ]
     pad = 0
     pad_tok = "<pad>"
@@ -72,8 +74,18 @@ class DocStats(Extractor):
                     if sp[0] == self.benchmark.domain:
                         KITT_urls[f"{sp[0]}_{sp[1]}"] = sp[2].strip()
             recbole_path = "/GW/PSR/work/ghazaleh/RecBole/"
-            rec_model = ItemLM(f"{recbole_path}saved/JOINTSRMFSPARSE-Jul-01-2021_11-51-10.pth", [f"{recbole_path}config_RO_RS_JSR.yml"],
-                           "JOINTSRMFSPARSE", "KITT_goodreads_rated", k=100, step=200000, load_docs=KITT_urls.values())
+            if self.config['CF_model'] == "description_genre_a100_ns8":
+                cf_model_file = f"{recbole_path}saved/JOINTSRMFSPARSE-Jul-01-2021_11-51-10.pth"
+                cf_config_files = [f"{recbole_path}config_RO_RS_JSR.yml"]
+            # elif self.config['CF_model'] == "description_genre_1-review_a100_ns8":
+            #     pass
+            # elif self.config['CF_model'] == "description_genre_all-reviews_a100_ns8":
+            #     pass
+            else:
+                raise NotImplementedError(f"{self.config['CF_model']} CF_model not implemented!")
+            # TODO clean , add to config, files
+            rec_model = ItemLM(cf_model_file, cf_config_files, "JOINTSRMFSPARSE", "KITT_goodreads_rated",
+                               k=self.config["CF_item_lm_top_k"], step=200000, load_docs=KITT_urls.values())
             for docid in docids:
                 b_url = KITT_urls[docid]
                 lm, title, url, recbole_id = rec_model.get_terms_url(b_url)
