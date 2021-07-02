@@ -10,7 +10,7 @@ PACKAGE_PATH = constants["PACKAGE_PATH"]
 @Collection.register
 class KITT(Collection):
     module_name = "kitt"
-    path = open(join(PACKAGE_PATH, "..", "paths_env_vars", "YGWYC_experiments_data_path"), 'r').read().strip() + "documents"
+    _path = open(join(PACKAGE_PATH, "..", "paths_env_vars", "YGWYC_experiments_data_path"), 'r').read().strip() + "documents"
     config_spec = [ConfigOption("domain", "book")]
 
 
