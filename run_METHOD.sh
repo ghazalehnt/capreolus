@@ -23,8 +23,8 @@ if [ "$cf_topk" == "" ];then
   echo "give input cf_topk an int"
   exit
 fi
-start=1
-end=90
+start=$5 # 1
+end=$6 # 90
 MEM=64
 SIMULRUN=10
 assessed_set=random20
