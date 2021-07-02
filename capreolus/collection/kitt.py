@@ -11,6 +11,8 @@ PACKAGE_PATH = constants["PACKAGE_PATH"]
 class KITT(Collection):
     module_name = "kitt"
     _path = open(join(PACKAGE_PATH, "..", "paths_env_vars", "YGWYC_experiments_data_path"), 'r').read().strip() + "documents"
+    collection_type = "TrecCollection"
+    generator_type = "DefaultLuceneDocumentGenerator"
     config_spec = [ConfigOption("domain", "book")]
 
 
