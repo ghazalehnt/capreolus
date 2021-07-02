@@ -23,17 +23,17 @@ if [ "$cf_topk" == "" ];then
   echo "give input cf_topk an int"
   exit
 fi
+assessed_set=random20
 start=$5 # 1
 end=$6 # 90
 MEM=64
 SIMULRUN=10
-assessed_set=random20
 
 declare -a domains=('book')
 
 for domain in "${domains[@]}"
 do
-  echo "sbatch -p cpu20 -a ${start}-${end}%${SIMULRUN} --mem-per-cpu=${MEM}G -o ${logfolder}${method}_${domain}_${pipeline}.log --open-mode=append run_STATISTICALs_single_complete.sh  $domain $pipeline $method $collection $assessed_set $cf_model $cf_topk;"
-  sbatch -p cpu20 -a ${start}-${end}%${SIMULRUN} --mem-per-cpu=${MEM}G -o ${logfolder}${method}_${domain}_${pipeline}.log --open-mode=append run_STATISTICALs_single_complete.sh  $domain $pipeline $method $collection $assessed_set $cf_model $cf_topk;
+  echo "sbatch -p cpu20 -a ${start}-${end}%${SIMULRUN} --mem-per-cpu=${MEM}G -o ${logfolder}${method}_${domain}_${pipeline}_${collection}_${cf_model}_${cf_topk}_${assessed_set}.log --open-mode=append run_STATISTICALs_single_complete.sh  $domain $pipeline $method $collection $assessed_set $cf_model $cf_topk;"
+  sbatch -p cpu20 -a ${start}-${end}%${SIMULRUN} --mem-per-cpu=${MEM}G -o ${logfolder}${method}_${domain}_${pipeline}_${collection}_${cf_model}_${cf_topk}_${assessed_set}.log --open-mode=append run_STATISTICALs_single_complete.sh  $domain $pipeline $method $collection $assessed_set $cf_model $cf_topk;
   sleep 5;
 done
