@@ -79,8 +79,9 @@ class DocStats(Extractor):
                 cf_config_files = [f"{recbole_path}config_RO_RS_JSR.yml"]
             # elif self.config['CF_model'] == "description_genre_1-review_a100_ns8":
             #     pass
-            # elif self.config['CF_model'] == "description_genre_all-reviews_a100_ns8":
-            #     pass
+            elif self.config['CF_model'] == "description_genre_all-reviews_a100_ns8":
+                cf_model_file = f"{recbole_path}saved/JOINTSRMFSPARSE-Jul-02-2021_14-05-41.pth"
+                cf_config_files = [f"{recbole_path}config_RO_RS_JSR_reviewall.yml"]
             else:
                 raise NotImplementedError(f"{self.config['CF_model']} CF_model not implemented!")
             # TODO clean , add to config, files
