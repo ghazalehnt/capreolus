@@ -36,7 +36,8 @@ class ItemLM:
                     item_ids.add(self.url_id[url])
                     url_id_temp[url] = self.url_id[url]
                 else:
-                    print(f"{url} does not exist in model")
+                    # print(f"{url} does not exist in model")
+                    pass
             item_ids = [0] + list(item_ids)
             self.url_id = url_id_temp
 
